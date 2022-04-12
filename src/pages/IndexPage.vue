@@ -1,17 +1,14 @@
 <template>
   <q-page class="flex flex-center">
-    <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    >
+    <TotalsView />
   </q-page>
 </template>
-
 <script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'IndexPage'
-})
+import TotalsView from "../components/Totals/TotalsView.vue";
+export default {
+  components: {
+    TotalsView,
+  },
+  name: "IndexPage",
+};
 </script>
