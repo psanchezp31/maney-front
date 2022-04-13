@@ -1,4 +1,4 @@
-# maney (maney-front)
+# manney (manney-front)
 
 app for money management
 
