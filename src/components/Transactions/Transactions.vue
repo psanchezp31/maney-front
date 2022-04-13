@@ -1,40 +1,51 @@
 <template>
   <div class="q-pa-md">
-    <q-table :rows="rows" row-key="name" hide-bottom />
+    <q-table :rows="rows" :columns="columns" row-key="name" hide-bottom />
   </div>
 </template>
 <script>
 const columns = [
   {
-    name: "name",
+    name: "category",
     required: true,
-    label: "Dessert (100g serving)",
+    label: "Category (Count)",
     align: "left",
     field: (row) => row.name,
     format: (val) => `${val}`,
-    sortable: false,
+    sortable: true,
   },
   {
-    name: "calories",
+    name: "total",
     align: "center",
-    label: "Calories",
-    field: "calories",
-    sortable: false,
+    label: "Total (COP)",
+    field: "total",
+    sortable: true,
   },
-  { name: "fat", label: "Fat (g)", field: "fat", sortable: false },
 ];
 const rows = [
   {
-    name: "Total incomes",
-    amount: 10000000,
+    name: "Salary (1)",
+    total: 10000000,
   },
   {
-    name: "Total expenses",
-    amount: 2000000,
+    name: "Market (3)",
+    total: 150000,
   },
   {
-    name: "Total debt",
-    amount: 3000000,
+    name: "Health (1)",
+    total: 45000,
+  },
+  {
+    name: "Pet (3)",
+    total: 500000,
+  },
+  {
+    name: "House (3)",
+    total: 150000,
+  },
+  {
+    name: "Shopping (1)",
+    total: 10000,
   },
 ];
 export default {
