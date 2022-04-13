@@ -1,13 +1,13 @@
 <template>
   <q-page class="flex flex-center">
-    <TotalsView />
+    <Totals />
   </q-page>
 </template>
 <script>
-import TotalsView from "../components/Totals/TotalsView.vue";
+import Totals from "../components/Totals/Totals.vue";
 export default {
   components: {
-    TotalsView,
+    Totals,
   },
   name: "IndexPage",
 };

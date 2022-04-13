@@ -7,8 +7,6 @@
 </template>
 <script>
 export default {
-  components: {
-  },
   name: "Navbar",
 };
 </script>
