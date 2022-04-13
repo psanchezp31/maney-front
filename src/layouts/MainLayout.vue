@@ -1,13 +1,15 @@
 <template>
-  <q-layout view="hHh lpR fFf">
-    <q-header elevated>
-      <Navbar />
-    </q-header>
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-    <Footer />
-  </q-layout>
+  <div class="pt-8">
+    <q-layout view="hHh lpR fFf">
+      <q-header elevated>
+        <Navbar />
+      </q-header>
+      <q-page-container>
+          <router-view />
+      </q-page-container>
+      <Footer />
+    </q-layout>
+  </div>
 </template>
 
 <script>

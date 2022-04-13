@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-col justify-center items-center bg-yellow-200">
+  <q-page class="flex flex-col justify-center items-center">
     <Totals />
     <Transactions />
     <Records />
