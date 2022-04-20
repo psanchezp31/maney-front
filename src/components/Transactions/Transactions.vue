@@ -2,7 +2,7 @@ import { ref } from 'vue';
 <template>
   <div class="q-pa-md">
     <q-table
-    class="my-sticky-virtscroll-table"
+      class="my-sticky-virtscroll-table"
       virtual-scroll
       v-model:pagination="pagination"
       :rows-per-page-options="[0]"
@@ -62,40 +62,18 @@ const columns = [
   },
 ];
 
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   setup() {
-    const rows = ref([
-      {
-        name: "Salary (1)",
-        total: 10000000,
-      },
-      {
-        name: "Market (3)",
-        total: 150000,
-      },
-      {
-        name: "Health (1)",
-        total: 45000,
-      },
-      {
-        name: "Pet (3)",
-        total: 500000,
-      },
-      {
-        name: "House (3)",
-        total: 150000,
-      },
-      {
-        name: "Shopping (1)",
-        total: 10000,
-      },
-    ]);
+    const { movements, rows } = useMoneyMovements();
+
     return {
+      movements,
       columns,
       rows,
       pagination: ref({
-        rowsPerPage: 0
+        rowsPerPage: 0,
       }),
       onRowClick(evt, row) {
         console.log("clicked on", row);
