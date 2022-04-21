@@ -1,12 +1,12 @@
 <template>
-  <div class="q-pa-md" style="max-width: 400px">
-    <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-      <div class="flex justify-center items-center form-wrapper">
+  <div class="q-pa-md">
+    <q-form @submit="addNewRecord" class="q-gutter-md">
+      <div class="flex justify-center items-center form-wrapper flex flex-col">
         <h2 class="font-bold">New Record</h2>
-        <div class="flex justify-center items-center inputs-wrapper">
+        <div class="flex justify-center items-center inputs-wrapper gap-7">
           <q-input
             v-model="category"
-            label="Enter new category"
+            label="Enter category"
             lazy-rules
             :rules="[
               (val) => (val && val.length > 0) || 'Please type something',
@@ -48,64 +48,52 @@
             </q-input>
           </div>
         </div>
-        <div>
-          <q-btn label="Add expense" type="submit" color="primary" />
-          <q-btn
-            label="Add income"
-            type="reset"
-            color="primary"
-            class="q-ml-sm"
+        <div class="q-gutter-sm radio-selector-type">
+          <q-radio
+            v-model="type"
+            checked-icon="task_alt"
+            unchecked-icon="panorama_fish_eye"
+            val="income"
+            label="Income"
+            color="green"
+          /><q-radio
+            v-model="type"
+            checked-icon="task_alt"
+            unchecked-icon="panorama_fish_eye"
+            val="expense"
+            label="Expense"
+            color="red"
           />
+        </div>
+        <div>
+          <q-btn label="Add record" type="submit" color="primary" />
         </div>
       </div>
     </q-form>
   </div>
 </template>
 <script>
-import { useQuasar } from "quasar";
 import { ref } from "vue";
-
+import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   setup() {
-    const $q = useQuasar();
-
-    const name = ref(null);
-    const age = ref(null);
+    const { addMovement } = useMoneyMovements();
     const category = ref(null);
+    const type = ref(null);
     const amount = ref(null);
-    const accept = ref(false);
-    const date = ref('2019/02/01');
+    const date = ref("2019/02/01");
 
     return {
-      name,
-      age,
-      accept,
       category,
       amount,
       date,
+      type: ref("line"),
 
-      onSubmit() {
-        if (accept.value !== true) {
-          $q.notify({
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: "You need to accept the license and terms first",
-          });
-        } else {
-          $q.notify({
-            color: "green-4",
-            textColor: "white",
-            icon: "cloud_done",
-            message: "Submitted",
-          });
-        }
-      },
-
-      onReset() {
-        name.value = null;
-        age.value = null;
-        accept.value = false;
+      addNewRecord() {
+        addMovement({
+          category:category.value,
+          type:type.value
+        });
       },
     };
   },

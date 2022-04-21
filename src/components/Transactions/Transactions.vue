@@ -62,12 +62,11 @@ const columns = [
   },
 ];
 
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   setup() {
     const { movements, rows } = useMoneyMovements();
-
     return {
       movements,
       columns,

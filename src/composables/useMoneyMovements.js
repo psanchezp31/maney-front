@@ -16,9 +16,16 @@ const useMoneyMovements = () => {
     });
   };
   getMovements();
+  const addMovement = (movementInfo) => {
+    moneyMovementsApi.addMovement(movementInfo).then((response) => {
+      console.log(response.data);
+    });
+    getMovements();
+  };
   return {
     movements,
     rows,
+    addMovement
   };
 };
 

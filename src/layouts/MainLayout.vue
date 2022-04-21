@@ -4,7 +4,7 @@
       <q-header elevated>
         <Navbar />
       </q-header>
-      <q-page-container>
+      <q-page-container class="flex flex-col justify-center items-center">
           <router-view />
       </q-page-container>
       <Footer />
