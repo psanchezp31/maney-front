@@ -1,99 +1,170 @@
 <template>
   <div class="q-pa-md">
-    <q-form @submit="addNewRecord" class="q-gutter-md">
-      <div class="flex justify-center items-center form-wrapper flex flex-col">
-        <h2 class="font-bold">New Record</h2>
-        <div class="flex justify-center items-center inputs-wrapper gap-7">
-          <q-input
-            v-model="category"
-            label="Enter category"
-            lazy-rules
-            :rules="[
-              (val) => (val && val.length > 0) || 'Please type something',
-            ]"
-          />
-          <q-input
-            v-model="amount"
-            label="Enter amount"
-            lazy-rules
-            :rules="[
-              (val) => (val && val.length > 0) || 'Please type something',
-            ]"
-          />
-        </div>
-        <div class="date-wrapper">
-          <div class="q-pa-md" style="max-width: 300px">
-            <q-input v-model="date" mask="date" :rules="['date']">
-              <template v-slot:append>
-                <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy
-                    ref="qDateProxy"
-                    cover
-                    transition-show="scale"
-                    transition-hide="scale"
-                  >
-                    <q-date v-model="date" today-btn>
-                      <div class="row items-center justify-end">
-                        <q-btn
-                          v-close-popup
-                          label="Close"
-                          color="primary"
-                          flat
-                        />
-                      </div>
-                    </q-date>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
+    <div class="flex justify-center items-center gap-4">
+      <label class="font-bold">Add New Record</label>
+      <q-btn
+        unelevated
+        round
+        color="primary"
+        icon="las la-plus"
+        @click="visible = !visible"
+        size="sm"
+      />
+    </div>
+    <q-slide-transition>
+      <div v-show="visible">
+        <form @submit.prevent.stop="addNewRecord" class="q-gutter-md">
+          <div
+            class="flex justify-center items-center form-wrapper flex flex-col"
+          >
+            <div class="flex justify-center items-center inputs-wrapper gap-7">
+              <q-input
+                ref="categoryRef"
+                v-model="category"
+                label="Enter category"
+                lazy-rules
+                :rules="categoryRules"
+              />
+              <q-input
+                ref="amountRef"
+                v-model="amount"
+                label="Amount"
+                type="number"
+                :rules="amountRules"
+              />
+            </div>
+            <div class="flex justify-center items-center inputs-wrapper gap-7">
+              <q-input v-model="proxyDate" label="Date" ref="dateRef">
+                <q-popup-proxy
+                  @before-show="updateProxy"
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="proxyDate">
+                    <div class="row items-center justify-end q-gutter-sm">
+                      <q-btn
+                        label="Cancel"
+                        color="primary"
+                        flat
+                        v-close-popup
+                      />
+                      <q-btn
+                        label="OK"
+                        color="primary"
+                        flat
+                        @click="saveDate"
+                        v-close-popup
+                      />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-input>
+              <q-input v-model="description" label="Description" />
+            </div>
+            <div class="q-gutter-sm radio-selector-type">
+              <q-radio
+                v-model="type"
+                checked-icon="task_alt"
+                unchecked-icon="panorama_fish_eye"
+                val="income"
+                label="Income"
+                color="green"
+              /><q-radio
+                v-model="type"
+                checked-icon="task_alt"
+                unchecked-icon="panorama_fish_eye"
+                val="expense"
+                label="Expense"
+                color="red"
+              />
+            </div>
+            <div>
+              <q-btn label="Add record" type="submit" color="primary" />
+            </div>
           </div>
-        </div>
-        <div class="q-gutter-sm radio-selector-type">
-          <q-radio
-            v-model="type"
-            checked-icon="task_alt"
-            unchecked-icon="panorama_fish_eye"
-            val="income"
-            label="Income"
-            color="green"
-          /><q-radio
-            v-model="type"
-            checked-icon="task_alt"
-            unchecked-icon="panorama_fish_eye"
-            val="expense"
-            label="Expense"
-            color="red"
-          />
-        </div>
-        <div>
-          <q-btn label="Add record" type="submit" color="primary" />
-        </div>
+        </form>
       </div>
-    </q-form>
+    </q-slide-transition>
   </div>
 </template>
+
 <script>
 import { ref } from "vue";
+import { useQuasar } from "quasar";
 import useMoneyMovements from "../../composables/useMoneyMovements";
+import useDate from "../../composables/useDate";
+
 export default {
   setup() {
+    const $q = useQuasar();
     const { addMovement } = useMoneyMovements();
+    const { todayDateParsed, currentHour, getDateToSend } = useDate();
     const category = ref(null);
-    const type = ref(null);
+    const categoryRef = ref(null);
     const amount = ref(null);
-    const date = ref("2019/02/01");
+    const amountRef = ref(null);
+    const date = ref(todayDateParsed);
+    const dateRef = ref(null);
+    const proxyDate = ref(todayDateParsed);
+    const description = ref(null);
+    const visible = ref(true);
+    const type = ref("line");
 
     return {
       category,
+      categoryRef,
       amount,
+      amountRef,
       date,
-      type: ref("line"),
-
+      dateRef,
+      type,
+      visible,
+      proxyDate,
+      description,
+      amountRules: [
+        (val) => (val && val.length > 0) || "Please type a valid amount",
+      ],
+      categoryRules: [
+        (val) => (val && val.length > 0) || "Please type a category",
+      ],
+      areValidInputs() {
+        categoryRef.value.validate();
+        amountRef.value.validate();
+        dateRef.value.validate();
+        if (
+          amountRef.value.hasError ||
+          categoryRef.value.hasError ||
+          dateRef.value.hasError
+        ) {
+          return false;
+        } else {
+          $q.notify({
+            icon: "done",
+            color: "positive",
+            message: "Submitted",
+          });
+          return true;
+        }
+      },
       addNewRecord() {
-        addMovement({
-          category:category.value,
-          type:type.value
-        });
+        const dateToSend = getDateToSend(date)
+        date.value = dateToSend.value
+        if (this.areValidInputs()) {
+          addMovement({
+            category: category.value,
+            type: type.value,
+            amount: amount.value,
+            description: description.value,
+            creationDate: `${date.value}${currentHour.value}`,
+          });
+        }
+      },
+      updateProxy() {
+        proxyDate.value = date.value;
+      },
+      saveDate() {
+        date.value = proxyDate.value;
       },
     };
   },

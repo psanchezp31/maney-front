@@ -17,6 +17,7 @@ const useMoneyMovements = () => {
   };
   getMovements();
   const addMovement = (movementInfo) => {
+    console.log("movementInfo :>> ", movementInfo);
     moneyMovementsApi.addMovement(movementInfo).then((response) => {
       console.log(response.data);
     });
@@ -25,7 +26,7 @@ const useMoneyMovements = () => {
   return {
     movements,
     rows,
-    addMovement
+    addMovement,
   };
 };
 
