@@ -8,5 +8,9 @@ export default {
   async addMovement(data){
     const resp = await axios.post("http://localhost:8081/money-movements", data);
     return resp;
+  },
+  async deleteMovement(movementId){
+    const resp = await axios.delete(`http://localhost:8081/money-movements/${movementId}`)
+    return resp
   }
 };

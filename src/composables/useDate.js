@@ -4,6 +4,7 @@ const useDate = () => {
   const todayDateParsed = ref(null);
   const currentHour = ref(null);
   const dateToSend = ref(null);
+  
   const getTodayDateParsed = (today = new Date().toISOString()) => {
     const year = today.substring(0, 4);
     const month = today.substring(5, 7);
@@ -17,13 +18,10 @@ const useDate = () => {
     return currentHour;
   };
   const getDateToSend = (date) => {
-    console.log('date :>> ', date.value, typeof date.value);
     const year = date.value.substring(0, 4);
-    console.log('year :>> ', year);
     const month = date.value.substring(5, 7);
     const day = date.value.substring(8, 10);
     dateToSend.value = `${year}-${month}-${day}`;
-    console.log('dateToSend :>> ', dateToSend.value);
     return dateToSend;
   };
   getTodayDateParsed();

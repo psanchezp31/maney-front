@@ -21,7 +21,7 @@ import { ref } from 'vue';
             no-caps
             flat
             dense
-            @click="deleteval(rows.indexOf(props.row))"
+            @click="deleteMovement(rows.indexOf(props.row))"
           />
           <q-btn
             color="primary"
@@ -29,13 +29,14 @@ import { ref } from 'vue';
             no-caps
             flat
             dense
-            @click="deleteval(rows.indexOf(props.row))"
+            @click="deleteMovement(rows.indexOf(props.row))"
           />
         </q-td>
       </template>
     </q-table>
   </div>
 </template>
+
 <script>
 const columns = [
   {
@@ -66,9 +67,10 @@ import { ref } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   setup() {
-    const { movements, rows } = useMoneyMovements();
+    const { movements, rows, deleteMovement } = useMoneyMovements();
     return {
       movements,
+      deleteMovement,
       columns,
       rows,
       pagination: ref({
@@ -79,11 +81,6 @@ export default {
       },
       btnclick() {
         console.log("Button Click");
-      },
-      deleteval(index) {
-        console.log(index);
-        rows.value.splice(index, 1);
-        console.log(rows.value);
       },
     };
   },

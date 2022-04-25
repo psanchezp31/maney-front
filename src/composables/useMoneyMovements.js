@@ -21,12 +21,25 @@ const useMoneyMovements = () => {
     moneyMovementsApi.addMovement(movementInfo).then((response) => {
       console.log(response.data);
     });
+    this.getMovements();
+  };
+  const deleteMovement = (movementId) => {
+    moneyMovementsApi
+      .deleteMovement(movementId)
+      .then((response) => {
+        console.log("deleted: " + movementId);
+      })
+      .catch((error) => {
+        console.error("There was an error: " + error);
+      });
     getMovements();
+    console.log("after getmovements")
   };
   return {
     movements,
     rows,
     addMovement,
+    deleteMovement,
   };
 };
 
