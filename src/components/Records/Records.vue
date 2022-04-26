@@ -31,6 +31,7 @@
                 label="Amount"
                 type="number"
                 :rules="amountRules"
+                prefix="COP $"
               />
             </div>
             <div class="flex justify-center items-center inputs-wrapper gap-7">
@@ -139,26 +140,35 @@ export default {
         ) {
           return false;
         } else {
-          $q.notify({
-            icon: "done",
-            color: "positive",
-            message: "Submitted",
-          });
           return true;
         }
       },
-      addNewRecord() {
-        const dateToSend = getDateToSend(date)
-        date.value = dateToSend.value
+      async addNewRecord() {
+        const dateToSend = getDateToSend(date);
+        date.value = dateToSend.value;
         if (this.areValidInputs()) {
-          addMovement({
+          await addMovement({
             category: category.value,
             type: type.value,
             amount: amount.value,
             description: description.value,
             creationDate: `${date.value}${currentHour.value}`,
           });
+          await this.initValues();
+        } else {
+          $q.notify({
+            icon: "done",
+            color: "positive",
+            message: "Submitted",
+          });
         }
+      },
+      initValues() {
+        category.value = null;
+        type.value = null;
+        amount.value = null;
+        description.value = null;
+        date.value = todayDateParsed;
       },
       updateProxy() {
         proxyDate.value = date.value;

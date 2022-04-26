@@ -15,13 +15,15 @@ import { ref } from 'vue';
     >
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
+          <!-- <div>{{props}}</div> -->
+          <!-- <div>{{movements}}</div> -->
           <q-btn
             color="negative"
             icon-right="delete"
             no-caps
             flat
             dense
-            @click="deleteMovement(rows.indexOf(props.row))"
+            @click="deleteRow(movements[props.rowIndex].id, props.rowIndex)"
           />
           <q-btn
             color="primary"
@@ -29,7 +31,7 @@ import { ref } from 'vue';
             no-caps
             flat
             dense
-            @click="deleteMovement(rows.indexOf(props.row))"
+            @click="deleteRow(movements[props.rowIndex].id, props.rowIndex)"
           />
         </q-td>
       </template>
@@ -63,11 +65,25 @@ const columns = [
   },
 ];
 
-import { ref } from "vue";
+import { ref, watch, onMounted } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   setup() {
-    const { movements, rows, deleteMovement } = useMoneyMovements();
+    const { movements, rows, deleteMovement, getMovements } =
+      useMoneyMovements();
+
+    watch(
+      () => rows.value,
+      () => {
+        console.log("hola from watch");
+        // getMovements();
+      }
+    );
+
+    onMounted(() => {
+      getMovements();
+    });
+
     return {
       movements,
       deleteMovement,
@@ -81,6 +97,10 @@ export default {
       },
       btnclick() {
         console.log("Button Click");
+      },
+      deleteRow(movementId, rowId) {
+        deleteMovement(movementId);
+        rows.value.splice(rowId,1)
       },
     };
   },

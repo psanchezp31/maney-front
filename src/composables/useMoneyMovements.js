@@ -5,6 +5,7 @@ const useMoneyMovements = () => {
   const movements = ref([]);
   const rows = ref([]);
   const getMovements = () => {
+    console.log("hola")
     moneyMovementsApi.getMovements().then((response) => {
       movements.value = response.data._embedded.moneyMovements;
       rows.value = movements.value.map((movement) => {
@@ -15,31 +16,29 @@ const useMoneyMovements = () => {
       });
     });
   };
-  getMovements();
-  const addMovement = (movementInfo) => {
-    console.log("movementInfo :>> ", movementInfo);
-    moneyMovementsApi.addMovement(movementInfo).then((response) => {
-      console.log(response.data);
-    });
-    this.getMovements();
+  const addMovement = async (movementInfo) => {
+    await moneyMovementsApi
+      .addMovement(movementInfo)
+      .then((response) => {})
+      .catch((error) => {
+        console.error("There was an error: " + error);
+      });
   };
   const deleteMovement = (movementId) => {
     moneyMovementsApi
       .deleteMovement(movementId)
       .then((response) => {
-        console.log("deleted: " + movementId);
       })
       .catch((error) => {
         console.error("There was an error: " + error);
       });
-    getMovements();
-    console.log("after getmovements")
   };
   return {
     movements,
     rows,
     addMovement,
     deleteMovement,
+    getMovements
   };
 };
 
