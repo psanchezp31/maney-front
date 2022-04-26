@@ -11,12 +11,15 @@ import { ref } from 'vue';
       :columns="columns"
       row-key="name"
       @row-click="onRowClick"
+      :loading="loading"
+      no-data-label="I didn't find anything for you"
       hide-bottom
     >
+      <template v-slot:loading>
+        <q-inner-loading showing color="primary" />
+      </template>
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
-          <!-- <div>{{props}}</div> -->
-          <!-- <div>{{movements}}</div> -->
           <q-btn
             color="negative"
             icon-right="delete"
@@ -84,11 +87,13 @@ export default {
       getMovements();
     });
 
+    const loading = ref(false);
     return {
       movements,
       deleteMovement,
       columns,
       rows,
+      loading,
       pagination: ref({
         rowsPerPage: 0,
       }),
@@ -99,8 +104,10 @@ export default {
         console.log("Button Click");
       },
       deleteRow(movementId, rowId) {
+        loading.value = true;
         deleteMovement(movementId);
-        rows.value.splice(rowId,1)
+        rows.value.splice(rowId, 1);
+        loading.value = false;
       },
     };
   },
