@@ -129,6 +129,13 @@ export default {
       categoryRules: [
         (val) => (val && val.length > 0) || "Please type a category",
       ],
+      movementInfo: {
+        category: category.value,
+        type: type.value,
+        amount: amount.value,
+        description: description.value,
+        creationDate: `${date.value}${currentHour.value}`,
+      },
       areValidInputs() {
         categoryRef.value.validate();
         amountRef.value.validate();
@@ -146,15 +153,17 @@ export default {
       async addNewRecord() {
         const dateToSend = getDateToSend(date);
         date.value = dateToSend.value;
+        const movementInfo = {
+          category: category.value,
+          type: type.value,
+          amount: amount.value,
+          description: description.value,
+          creationDate: `${date.value}${currentHour.value}`,
+        };
         if (this.areValidInputs()) {
-          await addMovement({
-            category: category.value,
-            type: type.value,
-            amount: amount.value,
-            description: description.value,
-            creationDate: `${date.value}${currentHour.value}`,
-          });
-          await this.initValues();
+          const addedMovement =  addMovement(movementInfo);
+          console.log("addedMoment: " + JSON.stringify(addedMovement))
+          // this.initValues();
         } else {
           $q.notify({
             icon: "done",

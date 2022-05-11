@@ -6,14 +6,14 @@
   </q-page>
 </template>
 <script>
-import Transactions from 'src/components/Transactions/Transactions.vue';
+import Transactions from "src/components/Transactions/Transactions.vue";
 import Totals from "../components/Totals/Totals.vue";
-import Records from 'src/components/Records/Records.vue';
+import Records from "src/components/Records/Records.vue";
 export default {
   components: {
     Totals,
     Transactions,
-    Records
+    Records,
   },
   name: "IndexPage",
 };

@@ -1,4 +1,3 @@
-import { ref } from 'vue';
 <template>
   <div class="q-pa-md">
     <q-table
@@ -68,18 +67,17 @@ const columns = [
   },
 ];
 
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   setup() {
     const { movements, rows, deleteMovement, getMovements } =
       useMoneyMovements();
-
     watch(
-      () => rows.value,
+      () => rows.value.length,
       () => {
-        console.log("hola from watch");
-        // getMovements();
+        console.log("length changed");
+        getMovements();
       }
     );
 
