@@ -6,7 +6,7 @@
       v-model:pagination="pagination"
       :rows-per-page-options="[0]"
       :virtual-scroll-sticky-size-start="3"
-      :rows="rows"
+      :rows="updatedRows"
       :columns="columns"
       row-key="name"
       @row-click="onRowClick"
@@ -17,7 +17,7 @@
       <template v-slot:loading>
         <q-inner-loading showing color="primary" />
       </template>
-      <template v-slot:body-cell-actions="props">
+      <!-- <template v-slot:body-cell-actions="props">
         <q-td :props="props">
           <q-btn
             color="negative"
@@ -36,8 +36,10 @@
             @click="deleteRow(movements[props.rowIndex].id, props.rowIndex)"
           />
         </q-td>
-      </template>
+      </template> -->
     </q-table>
+    rowsvalues in transactions: {{ rowsValues }}
+    rows: {{rows}}
   </div>
 </template>
 
@@ -66,32 +68,36 @@ const columns = [
     align: "center",
   },
 ];
-
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, computed, reactive, onMounted, onCreated } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
-  setup() {
-    const { movements, rows, deleteMovement, getMovements } =
-      useMoneyMovements();
-    watch(
-      () => rows.value.length,
-      () => {
-        console.log("length changed");
-        getMovements();
-      }
-    );
-
-    onMounted(() => {
-      getMovements();
-    });
-
+  name: "Transactions",
+  props: ["rowsValues"],
+  setup(props, context) {
+    const { movements, deleteMovement, getMovements, rows } = useMoneyMovements();
     const loading = ref(false);
+    const rowsValues = reactive(props.rowsValues);
+    const updatedRows = computed(()=>{
+      console.log(rows.value[0])
+      return rows.value
+    })
+    // watch(
+    //   () => rowsValues.value.length,
+    //   () => console.log("holaa")
+    // );
+
+
+
+    console.log("oncreated transactions: " + JSON.stringify(updatedRows.value));
+
     return {
       movements,
       deleteMovement,
       columns,
-      rows,
+      updatedRows,
+      rowsValues,
       loading,
+      rows,
       pagination: ref({
         rowsPerPage: 0,
       }),

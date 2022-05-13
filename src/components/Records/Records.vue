@@ -80,6 +80,7 @@
                 color="red"
               />
             </div>
+            rows in records: {{ rowsValues }}
             <div>
               <q-btn label="Add record" type="submit" color="primary" />
             </div>
@@ -91,15 +92,17 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref,onMounted } from "vue";
 import { useQuasar } from "quasar";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 import useDate from "../../composables/useDate";
 
 export default {
-  setup() {
+  name: "Records",
+  props: ["rowsValues"],
+  setup(props) {
     const $q = useQuasar();
-    const { addMovement } = useMoneyMovements();
+    const { addMovement, getMovements, rows } = useMoneyMovements();
     const { todayDateParsed, currentHour, getDateToSend } = useDate();
     const category = ref(null);
     const categoryRef = ref(null);
@@ -111,6 +114,19 @@ export default {
     const description = ref(null);
     const visible = ref(true);
     const type = ref("line");
+    // const rows = ref(props.rowsValues)
+    // const updatedRows = computed({
+    //   get: () =>
+    //     rows.value,
+    //   set: (value) => {
+    //     rows.value = value;
+    //   },
+    // });
+
+    console.log(
+      "rows.value in mounted records :>> ",
+      JSON.stringify(rows.value)
+    );
 
     return {
       category,
@@ -123,6 +139,9 @@ export default {
       visible,
       proxyDate,
       description,
+      // updatedRows,
+      rows,
+
       amountRules: [
         (val) => (val && val.length > 0) || "Please type a valid amount",
       ],
@@ -150,7 +169,7 @@ export default {
           return true;
         }
       },
-      async addNewRecord() {
+      addNewRecord() {
         const dateToSend = getDateToSend(date);
         date.value = dateToSend.value;
         const movementInfo = {
@@ -161,14 +180,23 @@ export default {
           creationDate: `${date.value}${currentHour.value}`,
         };
         if (this.areValidInputs()) {
-          const addedMovement =  addMovement(movementInfo);
-          console.log("addedMoment: " + JSON.stringify(addedMovement))
-          // this.initValues();
-        } else {
+          addMovement(movementInfo);
+          console.log(rows.value);
+          rows.value.push({
+            name: movementInfo.category,
+            total: movementInfo.amount,
+          });
+          console.log("rows after add: " + rows.value);
           $q.notify({
             icon: "done",
             color: "positive",
             message: "Submitted",
+          });
+        } else {
+          $q.notify({
+            icon: "done",
+            color: "negative",
+            message: "No submitted",
           });
         }
       },
