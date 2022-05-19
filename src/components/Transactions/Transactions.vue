@@ -6,7 +6,7 @@
       v-model:pagination="pagination"
       :rows-per-page-options="[0]"
       :virtual-scroll-sticky-size-start="3"
-      :rows="updatedRows"
+      :rows="transactionRows"
       :columns="columns"
       row-key="name"
       @row-click="onRowClick"
@@ -17,7 +17,7 @@
       <template v-slot:loading>
         <q-inner-loading showing color="primary" />
       </template>
-      <!-- <template v-slot:body-cell-actions="props">
+      <template v-slot:body-cell-actions="props">
         <q-td :props="props">
           <q-btn
             color="negative"
@@ -36,10 +36,10 @@
             @click="deleteRow(movements[props.rowIndex].id, props.rowIndex)"
           />
         </q-td>
-      </template> -->
+      </template>
     </q-table>
-    rowsvalues in transactions: {{ rowsValues }}
-    rows: {{rows}}
+    <div v-if="isMySiblingClicked">My sibling is clicked</div>
+    {{ isMySiblingClicked }}
   </div>
 </template>
 
@@ -50,7 +50,7 @@ const columns = [
     required: true,
     label: "Category (Count)",
     align: "left",
-    field: (row) => row.name,
+    field: (row) => row.category,
     format: (val) => `${val}`,
     sortable: true,
   },
@@ -58,7 +58,7 @@ const columns = [
     name: "total",
     align: "center",
     label: "Total (COP)",
-    field: "total",
+    field: "amount",
     sortable: true,
   },
   {
@@ -68,36 +68,39 @@ const columns = [
     align: "center",
   },
 ];
-import { ref, watch, computed, reactive, onMounted, onCreated } from "vue";
+import { ref, computed, toRefs, toRef } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   name: "Transactions",
-  props: ["rowsValues"],
-  setup(props, context) {
-    const { movements, deleteMovement, getMovements, rows } = useMoneyMovements();
+  props: {
+    isMySiblingClicked: Boolean,
+    newRow: Object,
+    transactionRows: ref,
+  },
+  setup(props) {
+    console.log("inside setup from Transactions.vue");
+    const { movements, deleteMovement, rows, rows2 } = useMoneyMovements();
     const loading = ref(false);
-    const rowsValues = reactive(props.rowsValues);
-    const updatedRows = computed(()=>{
-      console.log(rows.value[0])
-      return rows.value
-    })
-    // watch(
-    //   () => rowsValues.value.length,
-    //   () => console.log("holaa")
-    // );
-
-
-
-    console.log("oncreated transactions: " + JSON.stringify(updatedRows.value));
+    const rowNew = ref(props.newRow);
+    const { isMySiblingClicked } = toRefs(props);
+    console.log(isMySiblingClicked.value);
+    const transactionRows = props.transactionRows;
+    console.log(
+      "Transactions.vue's prop transactionRows = " +
+        JSON.stringify(transactionRows)
+    );
+    console.log("Transactions.vue's props = " + JSON.stringify(props));
 
     return {
+      rows,
+      rows2,
+      transactionRows,
       movements,
       deleteMovement,
       columns,
-      updatedRows,
-      rowsValues,
       loading,
-      rows,
+      rowNew,
+      // myprop,
       pagination: ref({
         rowsPerPage: 0,
       }),
@@ -110,7 +113,7 @@ export default {
       deleteRow(movementId, rowId) {
         loading.value = true;
         deleteMovement(movementId);
-        rows.value.splice(rowId, 1);
+        updatedRows.value.splice(rowId, 1);
         loading.value = false;
       },
     };

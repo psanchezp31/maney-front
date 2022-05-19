@@ -3,9 +3,10 @@ import moneyMovementsApi from "../api/money-movements/moneyMovements";
 
 const useMoneyMovements = () => {
   const movements = ref([]);
-  const rows = ref([]);
+  const rows = ref();
+  let rows2 = [];
   const getMovements = () => {
-     moneyMovementsApi.getMovements().then((response) => {
+    moneyMovementsApi.getMovements().then((response) => {
       movements.value = response.data._embedded.moneyMovements;
       rows.value = movements.value.map((movement) => {
         return {
@@ -13,35 +14,35 @@ const useMoneyMovements = () => {
           total: movement.amount,
         };
       });
-      console.log("rows.value :>> ", JSON.stringify(rows.value));
+      rows2 = rows.value;
+      console.log("1: rows2 -> ", JSON.stringify(rows2.length));
+      console.log("1: movements -> ", JSON.stringify(movements.value.length));
     });
-    return rows.value
+    console.log("2: outside movements fetching");
+    console.log("2: movements -> ", JSON.stringify(movements.value.length));
+    rows.value = [{ name: "x", total: 1 }];
+    rows2 = [{ name: "y", total: 1 }];
+    movements.value = [{ category: "y", amount: 1 }];
+    return movements;
   };
-  getMovements()
-  const getRows = () => rows.value;
-  const addMovement = async(movementInfo) => {
-    await moneyMovementsApi
-    .addMovement(movementInfo)
-    .then((response) => {
-      const newMovement = {
-        name: response.data.category,
-        total: response.data.amount,
-      };
-       rows.value.push(newMovement)
-      console.log("before get ")
-    }).then(()=>{
-      getMovements()
-      console.log("after get ")
-      })
-      .catch((error) => {
-        console.error("There was an error: " + error);
-      });
+  console.log("running getMovements automatically");
+  getMovements();
+  const addMovement = async (movementInfo) => {
+    moneyMovementsApi.addMovement(movementInfo);
+    // .then((response) => {
+    //   const newMovement = {
+    //     name: response.data.category,
+    //     total: response.data.amount,
+    //   };
+    //   getMovements();
+
+    // })
   };
   const deleteMovement = (movementId) => {
     moneyMovementsApi
       .deleteMovement(movementId)
       .then((response) => {
-        getMovements()
+        getMovements();
       })
       .catch((error) => {
         console.error("There was an error: " + error);
@@ -50,10 +51,10 @@ const useMoneyMovements = () => {
   return {
     movements,
     rows,
+    rows2,
     addMovement,
     deleteMovement,
     getMovements,
-    getRows
   };
 };
 

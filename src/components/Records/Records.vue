@@ -11,6 +11,7 @@
         size="sm"
       />
     </div>
+    {{ updatedRows }}
     <q-slide-transition>
       <div v-show="visible">
         <form @submit.prevent.stop="addNewRecord" class="q-gutter-md">
@@ -80,7 +81,6 @@
                 color="red"
               />
             </div>
-            rows in records: {{ rowsValues }}
             <div>
               <q-btn label="Add record" type="submit" color="primary" />
             </div>
@@ -88,19 +88,21 @@
         </form>
       </div>
     </q-slide-transition>
+    <button @click="$emit('buttonClicked')">click me</button>
   </div>
 </template>
 
 <script>
-import { ref,onMounted } from "vue";
+import { ref, computed, emits } from "vue";
 import { useQuasar } from "quasar";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 import useDate from "../../composables/useDate";
 
 export default {
   name: "Records",
-  props: ["rowsValues"],
-  setup(props) {
+  emits: ["getUpdatedRows", "buttonClicked"],
+  setup(props, context) {
+    console.log("context :>> ", context);
     const $q = useQuasar();
     const { addMovement, getMovements, rows } = useMoneyMovements();
     const { todayDateParsed, currentHour, getDateToSend } = useDate();
@@ -114,19 +116,13 @@ export default {
     const description = ref(null);
     const visible = ref(true);
     const type = ref("line");
-    // const rows = ref(props.rowsValues)
-    // const updatedRows = computed({
-    //   get: () =>
-    //     rows.value,
-    //   set: (value) => {
-    //     rows.value = value;
-    //   },
-    // });
 
-    console.log(
-      "rows.value in mounted records :>> ",
-      JSON.stringify(rows.value)
-    );
+    const updatedRows = computed({
+      get: () => rows.value,
+      set: (value) => {
+        rows.value = value;
+      },
+    });
 
     return {
       category,
@@ -139,7 +135,7 @@ export default {
       visible,
       proxyDate,
       description,
-      // updatedRows,
+      updatedRows,
       rows,
 
       amountRules: [
@@ -180,18 +176,27 @@ export default {
           creationDate: `${date.value}${currentHour.value}`,
         };
         if (this.areValidInputs()) {
-          addMovement(movementInfo);
-          console.log(rows.value);
-          rows.value.push({
+          addMovement(movementInfo)
+            .then((response) => {
+              $q.notify({
+                icon: "done",
+                color: "positive",
+                message: "Submitted",
+              });
+              context.emit("buttonClicked");
+            })
+            .catch(() => console.log("Error"));
+          updatedRows.value.push({
             name: movementInfo.category,
             total: movementInfo.amount,
           });
-          console.log("rows after add: " + rows.value);
-          $q.notify({
-            icon: "done",
-            color: "positive",
-            message: "Submitted",
-          });
+          context.emit("getUpdatedRows", updatedRows.value);
+          console.log(updatedRows.value);
+          // updatedRows.value = {
+          //   ...updatedRows,
+          //   name: movementInfo.category,
+          //   total: movementInfo.amount,
+          // };
         } else {
           $q.notify({
             icon: "done",
