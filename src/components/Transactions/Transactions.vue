@@ -25,7 +25,9 @@
             no-caps
             flat
             dense
-            @click="deleteRow(movements[props.rowIndex].id, props.rowIndex)"
+            @click="
+              deleteRow(transactionRows[props.rowIndex].id, props.rowIndex)
+            "
           />
           <q-btn
             color="primary"
@@ -33,7 +35,9 @@
             no-caps
             flat
             dense
-            @click="deleteRow(movements[props.rowIndex].id, props.rowIndex)"
+            @click="
+              deleteRow(transactionRows[props.rowIndex].id, props.rowIndex)
+            "
           />
         </q-td>
       </template>
@@ -68,6 +72,7 @@ const columns = [
 ];
 import { ref } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
+
 export default {
   name: "Transactions",
   props: {
@@ -76,7 +81,6 @@ export default {
   setup(props) {
     const { movements, deleteMovement } = useMoneyMovements();
     const loading = ref(false);
-    const rowNew = ref(props.newRow);
     const transactionRows = props.transactionRows;
 
     return {
@@ -85,7 +89,6 @@ export default {
       deleteMovement,
       columns,
       loading,
-      rowNew,
       pagination: ref({
         rowsPerPage: 0,
       }),
@@ -95,11 +98,15 @@ export default {
       btnclick() {
         console.log("Button Click");
       },
+
       deleteRow(movementId, rowId) {
         loading.value = true;
-        deleteMovement(movementId);
-        updatedRows.value.splice(rowId, 1);
-        loading.value = false;
+
+        timer = setTimeout(() => {
+          deleteMovement(movementId);
+          transactionRows.value.splice(rowId, 1);
+          loading.value = false;
+        }, 1000);
       },
     };
   },
