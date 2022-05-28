@@ -102,7 +102,7 @@ export default {
   name: "Records",
   emits: ["getUpdatedRows", "buttonClicked"],
   setup(props, context) {
-    console.log("context :>> ", context);
+    // console.log("context :>> ", context);
     const $q = useQuasar();
     const { addMovement, getMovements, rows } = useMoneyMovements();
     const { todayDateParsed, currentHour, getDateToSend } = useDate();
@@ -191,7 +191,7 @@ export default {
             total: movementInfo.amount,
           });
           context.emit("getUpdatedRows", updatedRows.value);
-          console.log(updatedRows.value);
+          // console.log(updatedRows.value);
           // updatedRows.value = {
           //   ...updatedRows,
           //   name: movementInfo.category,

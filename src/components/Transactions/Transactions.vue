@@ -78,22 +78,21 @@ export default {
     transactionRows: ref,
   },
   setup(props) {
-    console.log("inside setup from Transactions.vue");
-    const { movements, deleteMovement, rows, rows2 } = useMoneyMovements();
+    // console.log("inside setup from Transactions.vue");
+    const { movements, deleteMovement, rows } = useMoneyMovements();
     const loading = ref(false);
     const rowNew = ref(props.newRow);
     const { isMySiblingClicked } = toRefs(props);
-    console.log(isMySiblingClicked.value);
+    // console.log(isMySiblingClicked.value);
     const transactionRows = props.transactionRows;
-    console.log(
-      "Transactions.vue's prop transactionRows = " +
-        JSON.stringify(transactionRows)
-    );
-    console.log("Transactions.vue's props = " + JSON.stringify(props));
+    // console.log(
+    //   "Transactions.vue's prop transactionRows = " +
+    //     JSON.stringify(transactionRows)
+    // );
+    // console.log("Transactions.vue's props = " + JSON.stringify(props));
 
     return {
       rows,
-      rows2,
       transactionRows,
       movements,
       deleteMovement,

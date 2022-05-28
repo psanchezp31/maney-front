@@ -3,13 +3,9 @@
     <Totals />
     <Transactions
       :newRow="newRow"
-      :isMySiblingClicked="isSibling1Clicked"
       :transactionRows="transactionRows"
     />
     <Records @getUpdatedRows="getUpdatedRows" @buttonClicked="buttonClicked" />
-    <!-- <div v-if="newRow">
-    records send emit: {{newRow}}
-    </div> -->
   </q-page>
 </template>
 <script>
@@ -32,23 +28,21 @@ export default {
     const transactionRows = ref([]);
     transactionRows.value = movements;
 
-    console.log("movements = " + JSON.stringify(movements));
-    console.log(
-      "transactionRows.value = " + JSON.stringify(transactionRows.value)
-    );
+    // console.log("movements = " + JSON.stringify(movements));
+    // console.log(
+    //   "transactionRows.value = " + JSON.stringify(transactionRows.value)
+    // );
 
     const newRow = ref(null);
-    const isSibling1Clicked = ref(false);
     return {
       movements,
       transactionRows,
       buttonClicked: () => {
-        isSibling1Clicked.value = true;
-        console.log("isSibling1Clicked.value: " + isSibling1Clicked.value);
+        // console.log("isSibling1Clicked.value: " + isSibling1Clicked.value);
         transactionRows.value = getMovements();
       },
       getUpdatedRows: (val) => {
-        console.log("emitted value: " + JSON.stringify(val));
+        // console.log("emitted value: " + JSON.stringify(val));
         newRow.value = val;
         return newRow;
       },
