@@ -1,11 +1,8 @@
 <template>
   <q-page class="flex flex-col justify-center items-center w-2/3">
     <Totals />
-    <Transactions
-      :newRow="newRow"
-      :transactionRows="transactionRows"
-    />
-    <Records @getUpdatedRows="getUpdatedRows" @buttonClicked="buttonClicked" />
+    <Transactions :transactionRows="transactionRows" />
+    <Records @onRecordAdded="onRecordAdded" />
   </q-page>
 </template>
 <script>
@@ -24,28 +21,12 @@ export default {
   name: "IndexPage",
   setup() {
     const { movements, getMovements } = useMoneyMovements();
-    // getMovements();
     const transactionRows = ref([]);
     transactionRows.value = movements;
-
-    // console.log("movements = " + JSON.stringify(movements));
-    // console.log(
-    //   "transactionRows.value = " + JSON.stringify(transactionRows.value)
-    // );
-
-    const newRow = ref(null);
+    getMovements();
     return {
       movements,
       transactionRows,
-      buttonClicked: () => {
-        // console.log("isSibling1Clicked.value: " + isSibling1Clicked.value);
-        transactionRows.value = getMovements();
-      },
-      getUpdatedRows: (val) => {
-        // console.log("emitted value: " + JSON.stringify(val));
-        newRow.value = val;
-        return newRow;
-      },
       onRecordAdded() {
         transactionRows.value = getMovements();
       },

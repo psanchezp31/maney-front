@@ -38,8 +38,6 @@
         </q-td>
       </template>
     </q-table>
-    <div v-if="isMySiblingClicked">My sibling is clicked</div>
-    {{ isMySiblingClicked }}
   </div>
 </template>
 
@@ -68,38 +66,26 @@ const columns = [
     align: "center",
   },
 ];
-import { ref, computed, toRefs, toRef } from "vue";
+import { ref } from "vue";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   name: "Transactions",
   props: {
-    isMySiblingClicked: Boolean,
-    newRow: Object,
     transactionRows: ref,
   },
   setup(props) {
-    // console.log("inside setup from Transactions.vue");
-    const { movements, deleteMovement, rows } = useMoneyMovements();
+    const { movements, deleteMovement } = useMoneyMovements();
     const loading = ref(false);
     const rowNew = ref(props.newRow);
-    const { isMySiblingClicked } = toRefs(props);
-    // console.log(isMySiblingClicked.value);
     const transactionRows = props.transactionRows;
-    // console.log(
-    //   "Transactions.vue's prop transactionRows = " +
-    //     JSON.stringify(transactionRows)
-    // );
-    // console.log("Transactions.vue's props = " + JSON.stringify(props));
 
     return {
-      rows,
       transactionRows,
       movements,
       deleteMovement,
       columns,
       loading,
       rowNew,
-      // myprop,
       pagination: ref({
         rowsPerPage: 0,
       }),

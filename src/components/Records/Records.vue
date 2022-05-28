@@ -11,7 +11,6 @@
         size="sm"
       />
     </div>
-    {{ updatedRows }}
     <q-slide-transition>
       <div v-show="visible">
         <form @submit.prevent.stop="addNewRecord" class="q-gutter-md">
@@ -88,23 +87,20 @@
         </form>
       </div>
     </q-slide-transition>
-    <button @click="$emit('buttonClicked')">click me</button>
   </div>
 </template>
 
 <script>
-import { ref, computed, emits } from "vue";
+import { ref } from "vue";
 import { useQuasar } from "quasar";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 import useDate from "../../composables/useDate";
 
 export default {
   name: "Records",
-  emits: ["getUpdatedRows", "buttonClicked"],
   setup(props, context) {
-    // console.log("context :>> ", context);
     const $q = useQuasar();
-    const { addMovement, getMovements, rows } = useMoneyMovements();
+    const { addMovement } = useMoneyMovements();
     const { todayDateParsed, currentHour, getDateToSend } = useDate();
     const category = ref(null);
     const categoryRef = ref(null);
@@ -117,13 +113,6 @@ export default {
     const visible = ref(true);
     const type = ref("line");
 
-    const updatedRows = computed({
-      get: () => rows.value,
-      set: (value) => {
-        rows.value = value;
-      },
-    });
-
     return {
       category,
       categoryRef,
@@ -135,8 +124,6 @@ export default {
       visible,
       proxyDate,
       description,
-      updatedRows,
-      rows,
 
       amountRules: [
         (val) => (val && val.length > 0) || "Please type a valid amount",
@@ -183,20 +170,9 @@ export default {
                 color: "positive",
                 message: "Submitted",
               });
-              context.emit("buttonClicked");
+              context.emit("onRecordAdded");
             })
             .catch(() => console.log("Error"));
-          updatedRows.value.push({
-            name: movementInfo.category,
-            total: movementInfo.amount,
-          });
-          context.emit("getUpdatedRows", updatedRows.value);
-          // console.log(updatedRows.value);
-          // updatedRows.value = {
-          //   ...updatedRows,
-          //   name: movementInfo.category,
-          //   total: movementInfo.amount,
-          // };
         } else {
           $q.notify({
             icon: "done",
