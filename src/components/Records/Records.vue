@@ -13,7 +13,11 @@
     </div>
     <q-slide-transition>
       <div v-show="visible">
-        <form @submit.prevent.stop="addNewRecord" class="q-gutter-md">
+        <q-form
+          @submit.prevent="addNewRecord"
+          class="q-gutter-md"
+          ref="formRecords"
+        >
           <div
             class="flex justify-center items-center form-wrapper flex flex-col"
           >
@@ -84,7 +88,7 @@
               <q-btn label="Add record" type="submit" color="primary" />
             </div>
           </div>
-        </form>
+        </q-form>
       </div>
     </q-slide-transition>
   </div>
@@ -102,6 +106,7 @@ export default {
     const $q = useQuasar();
     const { addMovement } = useMoneyMovements();
     const { todayDateParsed, currentHour, getDateToSend } = useDate();
+    const formRecords = ref(null);
     const category = ref(null);
     const categoryRef = ref(null);
     const amount = ref(null);
@@ -113,7 +118,32 @@ export default {
     const visible = ref(true);
     const type = ref("line");
 
+    function areValidInputs() {
+      categoryRef.value.validate();
+      amountRef.value.validate();
+      dateRef.value.validate();
+      if (
+        amountRef.value.hasError ||
+        categoryRef.value.hasError ||
+        dateRef.value.hasError
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    function initValues() {
+      category.value = null;
+      type.value = null;
+      amount.value = null;
+      description.value = null;
+      date.value = todayDateParsed.value;
+      formRecords.value.reset();
+    }
+
     return {
+      formRecords,
       category,
       categoryRef,
       amount,
@@ -124,6 +154,8 @@ export default {
       visible,
       proxyDate,
       description,
+      areValidInputs,
+      initValues,
 
       amountRules: [
         (val) => (val && val.length > 0) || "Please type a valid amount",
@@ -138,20 +170,7 @@ export default {
         description: description.value,
         creationDate: `${date.value}${currentHour.value}`,
       },
-      areValidInputs() {
-        categoryRef.value.validate();
-        amountRef.value.validate();
-        dateRef.value.validate();
-        if (
-          amountRef.value.hasError ||
-          categoryRef.value.hasError ||
-          dateRef.value.hasError
-        ) {
-          return false;
-        } else {
-          return true;
-        }
-      },
+
       addNewRecord() {
         const dateToSend = getDateToSend(date);
         date.value = dateToSend.value;
@@ -162,32 +181,27 @@ export default {
           description: description.value,
           creationDate: `${date.value}${currentHour.value}`,
         };
-        if (this.areValidInputs()) {
+        if (areValidInputs()) {
           addMovement(movementInfo)
-            .then((response) => {
+            .then(() => {
               $q.notify({
                 icon: "done",
                 color: "positive",
                 message: "Submitted",
               });
               context.emit("onRecordAdded");
+              initValues();
             })
             .catch(() => console.log("Error"));
         } else {
           $q.notify({
             icon: "done",
             color: "negative",
-            message: "No submitted",
+            message: "There are empty fields",
           });
         }
       },
-      initValues() {
-        category.value = null;
-        type.value = null;
-        amount.value = null;
-        description.value = null;
-        date.value = todayDateParsed;
-      },
+
       updateProxy() {
         proxyDate.value = date.value;
       },

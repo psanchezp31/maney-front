@@ -15,17 +15,22 @@ const useMoneyMovements = () => {
   const deleteMovement = (movementId) => {
     moneyMovementsApi
       .deleteMovement(movementId)
-      .then((response) => {
-      })
+      .then((response) => {})
       .catch((error) => {
         console.error("There was an error: " + error);
       });
   };
+  const editMovement = (movementId, movementInfo) => {
+    moneyMovementsApi.editMovement(movementId, movementInfo).catch((error) => {
+      console.error("There was an error: " + error);
+    });
+  };
   return {
     movements,
+    getMovements,
     addMovement,
     deleteMovement,
-    getMovements,
+    editMovement
   };
 };
 

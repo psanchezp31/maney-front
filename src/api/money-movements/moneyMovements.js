@@ -2,17 +2,21 @@ import axios from "axios";
 
 export default {
   getMovements() {
-    const resp = axios.get("http://localhost:8081/money-movements");
-    return resp;
+    const response = axios.get("http://localhost:8081/money-movements");
+    return response;
   },
   addMovement(data) {
-    const resp = axios.post("http://localhost:8081/money-movements", data);
-    return resp;
+    const response = axios.post("http://localhost:8081/money-movements", data);
+    return response;
   },
   deleteMovement(movementId) {
-    const resp = axios.delete(
+    const response = axios.delete(
       `http://localhost:8081/money-movements/${movementId}`
     );
-    return resp;
+    return response;
   },
+  editMovement(movementId, data){
+    const response = axios.put(`http://localhost:8081/money-movements/${movementId}`, data)
+    return response
+  }
 };

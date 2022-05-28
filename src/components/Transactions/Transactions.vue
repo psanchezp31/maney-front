@@ -36,7 +36,7 @@
             flat
             dense
             @click="
-              deleteRow(transactionRows[props.rowIndex].id, props.rowIndex)
+              editRow(transactionRows[props.rowIndex].id, props)
             "
           />
         </q-td>
@@ -79,7 +79,7 @@ export default {
     transactionRows: ref,
   },
   setup(props) {
-    const { movements, deleteMovement } = useMoneyMovements();
+    const { movements, deleteMovement, editMovement } = useMoneyMovements();
     const loading = ref(false);
     const transactionRows = props.transactionRows;
 
@@ -98,16 +98,19 @@ export default {
       btnclick() {
         console.log("Button Click");
       },
-
-      deleteRow(movementId, rowId) {
+      deleteRow(transactionId, rowId) {
         loading.value = true;
-
-        timer = setTimeout(() => {
-          deleteMovement(movementId);
+        setTimeout(() => {
+          deleteMovement(transactionId);
           transactionRows.value.splice(rowId, 1);
           loading.value = false;
         }, 1000);
       },
+      editRow(transactionId, rowId){
+        console.log('transactionId :>> ', transactionId);
+        console.log('transactionInfo :>> ', rowId);
+        // editMovement(transactionId)
+      }
     };
   },
 };
