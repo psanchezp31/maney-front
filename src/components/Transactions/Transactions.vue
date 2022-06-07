@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      class="my-sticky-virtscroll-table"
+      class="my-sticky-virtscroll-table my-sticky-header-table auto-width"
       virtual-scroll
       v-model:pagination="pagination"
       :rows-per-page-options="[0]"
@@ -13,6 +13,7 @@
       :loading="loading"
       no-data-label="I didn't find anything for you"
       hide-bottom
+      table-style="max-height: 400px"
     >
       <template v-slot:loading>
         <q-inner-loading showing color="primary" />
@@ -35,9 +36,7 @@
             no-caps
             flat
             dense
-            @click="
-              editRow(transactionRows[props.rowIndex].id, props)
-            "
+            @click="editRow(transactionRows[props.rowIndex].id, props)"
           />
         </q-td>
       </template>
@@ -78,7 +77,8 @@ export default {
   props: {
     transactionRows: ref,
   },
-  setup(props) {
+  emits: ["scrollToBottom"],
+  setup(props, context) {
     const { movements, deleteMovement, editMovement } = useMoneyMovements();
     const loading = ref(false);
     const transactionRows = props.transactionRows;
@@ -106,12 +106,18 @@ export default {
           loading.value = false;
         }, 1000);
       },
-      editRow(transactionId, rowId){
-        console.log('transactionId :>> ', transactionId);
-        console.log('transactionInfo :>> ', rowId);
+      editRow(transactionId, rowId) {
+        console.log("transactionId :>> ", transactionId);
+        console.log("transactionInfo :>> ", rowId);
         // editMovement(transactionId)
-      }
+        context.emit("scrollToBottom");
+      },
     };
   },
 };
 </script>
+<style scoped>
+/deep/.scroll {
+  overflow-x: hidden;
+}
+</style>
