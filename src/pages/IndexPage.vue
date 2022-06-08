@@ -17,7 +17,7 @@ import Transactions from "src/components/Transactions/Transactions.vue";
 import Totals from "../components/Totals/Totals.vue";
 import Records from "src/components/Records/Records.vue";
 import useMoneyMovements from "../composables/useMoneyMovements";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 
 export default {
   components: {
@@ -29,27 +29,21 @@ export default {
   setup() {
     const { movements, getMovements } = useMoneyMovements();
     const transactionRows = ref([]);
-    const root = ref(null);
-    const container = ref(null);
+    const rowToEdit = ref(null);
     transactionRows.value = movements;
     getMovements();
 
-    onMounted(() => {
-      // the DOM element will be assigned to the ref after initial render
-      console.log(root.value); // this is your $el
-      container.value = root.value.$el.querySelector("#main-container");
-      container.scrollTop = 855;
-    });
     return {
-      root,
-      container,
+      rowToEdit,
       movements,
       transactionRows,
       onRecordAdded() {
         transactionRows.value = getMovements();
       },
-      scrollToBottom() {
-        container.scrollTop = 855;
+      scrollToBottom(rowId) {
+        rowToEdit.value = rowId
+        console.log(rowToEdit)
+        window.scrollTo(0, 855);
       },
     };
   },
