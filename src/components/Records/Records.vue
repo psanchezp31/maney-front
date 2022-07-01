@@ -38,6 +38,9 @@
                 prefix="COP $"
               />
             </div>
+            <div v-if="recordToEdit">
+              {{ recordToEdit }}
+            </div>
             <div class="flex justify-center items-center inputs-wrapper gap-7">
               <q-input v-model="proxyDate" label="Date" ref="dateRef">
                 <q-popup-proxy
@@ -95,13 +98,14 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useQuasar } from "quasar";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 import useDate from "../../composables/useDate";
 
 export default {
   name: "Records",
+  props: ["rowToEdit"],
   setup(props, context) {
     const $q = useQuasar();
     const { addMovement } = useMoneyMovements();
@@ -117,6 +121,13 @@ export default {
     const description = ref(null);
     const visible = ref(true);
     const type = ref("line");
+    const recordToEdit = props.rowToEdit;
+    console.log("recordToEdit: " + recordToEdit);
+    watch(() => {
+      if (recordToEdit.value) {
+        console.log("inside watcheffect: "+JSON.stringify(rowToEdit.value));
+      }
+    });
 
     function areValidInputs() {
       categoryRef.value.validate();
@@ -156,6 +167,7 @@ export default {
       description,
       areValidInputs,
       initValues,
+      recordToEdit,
 
       amountRules: [
         (val) => (val && val.length > 0) || "Please type a valid amount",

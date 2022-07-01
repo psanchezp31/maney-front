@@ -75,7 +75,7 @@ import useMoneyMovements from "../../composables/useMoneyMovements";
 export default {
   name: "Transactions",
   props: {
-    transactionRows: ref,
+    transactionRows: Object,
   },
   emits: ["scrollToBottom"],
   setup(props, context) {
@@ -111,6 +111,7 @@ export default {
         // console.log("transactionInfo :>> ", rowId);
         // editMovement(transactionId)
         context.emit("scrollToBottom", rowId.row);
+
 
       },
     };

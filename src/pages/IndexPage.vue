@@ -9,7 +9,7 @@
       :transactionRows="transactionRows"
       @scrollToBottom="scrollToBottom"
     />
-    <Records @onRecordAdded="onRecordAdded" />
+    <Records @onRecordAdded="onRecordAdded" :rowToEdit="rowToEdit" />
   </q-page>
 </template>
 <script>
@@ -17,7 +17,7 @@ import Transactions from "src/components/Transactions/Transactions.vue";
 import Totals from "../components/Totals/Totals.vue";
 import Records from "src/components/Records/Records.vue";
 import useMoneyMovements from "../composables/useMoneyMovements";
-import { ref } from "vue";
+import { ref, computed, watchEffect } from "vue";
 
 export default {
   components: {
@@ -28,21 +28,27 @@ export default {
   name: "IndexPage",
   setup() {
     const { movements, getMovements } = useMoneyMovements();
-    const transactionRows = ref([]);
-    const rowToEdit = ref(null);
+    const transactionRows = ref(null);
     transactionRows.value = movements;
     getMovements();
 
+    watchEffect(
+      () => rowToEdit.value,
+      () => (rowToEdit.value = row)
+    );
     return {
-      rowToEdit,
+      rowToEdit: watchEffect(() => null),
       movements,
       transactionRows,
       onRecordAdded() {
         transactionRows.value = getMovements();
       },
-      scrollToBottom(rowId) {
-        rowToEdit.value = rowId
-        console.log(rowToEdit)
+      scrollToBottom(row) {
+        console.log("row :>> ", row);
+        if (row !== null) {
+          rowToEdit.value = row;
+        }
+        console.log(rowToEdit.value);
         window.scrollTo(0, 855);
       },
     };
