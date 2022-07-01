@@ -30,21 +30,17 @@ export default {
     const { movements, getMovements } = useMoneyMovements();
     const transactionRows = ref(null);
     transactionRows.value = movements;
+    const rowToEdit = ref(null);
     getMovements();
 
-    watchEffect(
-      () => rowToEdit.value,
-      () => (rowToEdit.value = row)
-    );
     return {
-      rowToEdit: watchEffect(() => null),
+      rowToEdit,
       movements,
       transactionRows,
       onRecordAdded() {
         transactionRows.value = getMovements();
       },
       scrollToBottom(row) {
-        console.log("row :>> ", row);
         if (row !== null) {
           rowToEdit.value = row;
         }

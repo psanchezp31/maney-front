@@ -98,14 +98,16 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, watchEffect, computed } from "vue";
 import { useQuasar } from "quasar";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 import useDate from "../../composables/useDate";
 
 export default {
   name: "Records",
-  props: ["rowToEdit"],
+  props: {
+    rowToEdit: Object,
+  },
   setup(props, context) {
     const $q = useQuasar();
     const { addMovement } = useMoneyMovements();
@@ -121,11 +123,15 @@ export default {
     const description = ref(null);
     const visible = ref(true);
     const type = ref("line");
-    const recordToEdit = props.rowToEdit;
+    const recordToEdit = computed(() =>
+      props.rowToEdit ? props.rowToEdit : ""
+    );
     console.log("recordToEdit: " + recordToEdit);
-    watch(() => {
+    watchEffect(() => {
       if (recordToEdit.value) {
-        console.log("inside watcheffect: "+JSON.stringify(rowToEdit.value));
+        console.log(
+          "inside watcheffect: " + JSON.stringify(recordToEdit.value)
+        );
       }
     });
 
