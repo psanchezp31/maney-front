@@ -17,6 +17,7 @@
           @submit.prevent="addNewRecord"
           class="q-gutter-md"
           ref="formRecords"
+          @validation-error="errorValidation"
         >
           <div
             class="flex justify-center items-center form-wrapper flex flex-col"
@@ -37,9 +38,6 @@
                 :rules="amountRules"
                 prefix="COP $"
               />
-            </div>
-            <div v-if="recordToEdit">
-              {{ recordToEdit }}
             </div>
             <div class="flex justify-center items-center inputs-wrapper gap-7">
               <q-input v-model="proxyDate" label="Date" ref="dateRef">
@@ -136,7 +134,7 @@ export default {
         description.value = recordToEdit.value.description;
         const dateToSend = getDateToSend(ref(recordToEdit.value.creationDate));
         proxyDate.value = dateToSend.value;
-        type.value = recordToEdit.value.type
+        type.value = recordToEdit.value.type;
       }
     });
 
@@ -194,6 +192,13 @@ export default {
         creationDate: `${date.value}${currentHour.value}`,
         type: type.value,
       },
+      errorValidation() {
+        $q.notify({
+          icon: "done",
+          color: "negative",
+          message: "There are empty fields",
+        });
+      },
 
       addNewRecord() {
         const dateToSend = getDateToSend(date);
@@ -218,12 +223,6 @@ export default {
               initValues();
             })
             .catch(() => console.log("Error"));
-        } else {
-          $q.notify({
-            icon: "done",
-            color: "negative",
-            message: "There are empty fields",
-          });
         }
       },
 
