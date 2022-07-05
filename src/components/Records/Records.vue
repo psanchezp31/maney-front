@@ -126,12 +126,17 @@ export default {
     const recordToEdit = computed(() =>
       props.rowToEdit ? props.rowToEdit : ""
     );
-    console.log("recordToEdit: " + recordToEdit);
     watchEffect(() => {
       if (recordToEdit.value) {
         console.log(
           "inside watcheffect: " + JSON.stringify(recordToEdit.value)
         );
+        category.value = recordToEdit.value.category;
+        amount.value = recordToEdit.value.amount;
+        description.value = recordToEdit.value.description;
+        const dateToSend = getDateToSend(ref(recordToEdit.value.creationDate));
+        proxyDate.value = dateToSend.value;
+        type.value = recordToEdit.value.type
       }
     });
 
@@ -187,6 +192,7 @@ export default {
         amount: amount.value,
         description: description.value,
         creationDate: `${date.value}${currentHour.value}`,
+        type: type.value,
       },
 
       addNewRecord() {
@@ -198,6 +204,7 @@ export default {
           amount: amount.value,
           description: description.value,
           creationDate: `${date.value}${currentHour.value}`,
+          type: type.value,
         };
         if (areValidInputs()) {
           addMovement(movementInfo)

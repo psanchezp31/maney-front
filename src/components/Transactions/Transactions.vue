@@ -107,9 +107,6 @@ export default {
         }, 1000);
       },
       editRow(transactionId, rowId) {
-        // console.log("transactionId :>> ", transactionId);
-        // console.log("transactionInfo :>> ", rowId);
-        // editMovement(transactionId)
         context.emit("scrollToBottom", rowId.row);
 
 
