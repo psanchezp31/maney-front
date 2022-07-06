@@ -108,8 +108,6 @@ export default {
       },
       editRow(transactionId, rowId) {
         context.emit("scrollToBottom", rowId.row);
-
-
       },
     };
   },

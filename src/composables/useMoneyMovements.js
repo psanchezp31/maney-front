@@ -20,17 +20,15 @@ const useMoneyMovements = () => {
         console.error("There was an error: " + error);
       });
   };
-  const editMovement = (movementId, movementInfo) => {
-    moneyMovementsApi.editMovement(movementId, movementInfo).catch((error) => {
-      console.error("There was an error: " + error);
-    });
+  const editMovement = async (movementId, movementInfo) => {
+    moneyMovementsApi.editMovement(movementId, movementInfo);
   };
   return {
     movements,
     getMovements,
     addMovement,
     deleteMovement,
-    editMovement
+    editMovement,
   };
 };
 

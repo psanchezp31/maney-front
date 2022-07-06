@@ -1,7 +1,9 @@
 <template>
   <div class="q-pa-md">
     <div class="flex justify-center items-center gap-4">
-      <label class="font-bold">Add New Record</label>
+      <label class="font-bold">{{
+        isEditing ? "Update Record" : "Add New Record"
+      }}</label>
       <q-btn
         unelevated
         round
@@ -86,7 +88,11 @@
               />
             </div>
             <div>
-              <q-btn label="Add record" type="submit" color="primary" />
+              <q-btn
+                :label="isEditing ? 'Update' : 'Add record'"
+                type="submit"
+                color="primary"
+              />
             </div>
           </div>
         </q-form>
@@ -108,7 +114,7 @@ export default {
   },
   setup(props, context) {
     const $q = useQuasar();
-    const { addMovement } = useMoneyMovements();
+    const { addMovement, editMovement } = useMoneyMovements();
     const { todayDateParsed, currentHour, getDateToSend } = useDate();
     const formRecords = ref(null);
     const category = ref(null);
@@ -124,6 +130,7 @@ export default {
     const recordToEdit = computed(() =>
       props.rowToEdit ? props.rowToEdit : ""
     );
+    const isEditing = ref(false);
     watchEffect(() => {
       if (recordToEdit.value) {
         console.log(
@@ -135,6 +142,8 @@ export default {
         const dateToSend = getDateToSend(ref(recordToEdit.value.creationDate));
         proxyDate.value = dateToSend.value;
         type.value = recordToEdit.value.type;
+        isEditing.value = true;
+        console.log(isEditing.value);
       }
     });
 
@@ -177,7 +186,7 @@ export default {
       areValidInputs,
       initValues,
       recordToEdit,
-
+      isEditing,
       amountRules: [
         (val) => (val && val.length > 0) || "Please type a valid amount",
       ],
@@ -194,12 +203,11 @@ export default {
       },
       errorValidation() {
         $q.notify({
-          icon: "done",
+          icon: "warning",
           color: "negative",
           message: "There are empty fields",
         });
       },
-
       addNewRecord() {
         const dateToSend = getDateToSend(date);
         date.value = dateToSend.value;
@@ -212,20 +220,32 @@ export default {
           type: type.value,
         };
         if (areValidInputs()) {
-          addMovement(movementInfo)
-            .then(() => {
-              $q.notify({
-                icon: "done",
-                color: "positive",
-                message: "Submitted",
-              });
-              context.emit("onRecordAdded");
-              initValues();
-            })
-            .catch(() => console.log("Error"));
+          if (!recordToEdit.value.id) {
+            addMovement(movementInfo)
+              .then(() => {
+                $q.notify({
+                  icon: "done",
+                  color: "positive",
+                  message: "Submitted",
+                });
+                context.emit("onRecordAdded");
+                initValues();
+              })
+              .catch(() => console.log("Error"));
+          } else {
+            editMovement(recordToEdit.value.id, movementInfo)
+              .then(() => {
+                $q.notify({
+                  icon: "done",
+                  color: "positive",
+                  message: "Record updated",
+                });
+                initValues();
+              })
+              .catch(() => console.log("Error"));
+          }
         }
       },
-
       updateProxy() {
         proxyDate.value = date.value;
       },
