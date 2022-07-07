@@ -39,6 +39,7 @@ export default {
       transactionRows,
       onRecordAdded() {
         transactionRows.value = getMovements();
+        console.log('transactionRows onRecordAdded :>> ', transactionRows.value);
       },
       scrollToBottom(row) {
         if (row !== null) {

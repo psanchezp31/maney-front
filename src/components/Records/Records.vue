@@ -131,8 +131,11 @@ export default {
       props.rowToEdit ? props.rowToEdit : ""
     );
     const isEditing = ref(false);
+    const hasEdited = ref(true);
     watchEffect(() => {
-      if (recordToEdit.value) {
+      console.log('recordToEdit.value :>> ', recordToEdit.value);
+      console.log('hasEdited.value :>> ', hasEdited.value);
+      if (recordToEdit.value && hasEdited.value) {
         console.log(
           "inside watcheffect: " + JSON.stringify(recordToEdit.value)
         );
@@ -143,7 +146,8 @@ export default {
         proxyDate.value = dateToSend.value;
         type.value = recordToEdit.value.type;
         isEditing.value = true;
-        console.log(isEditing.value);
+      } else {
+        isEditing.value = false;
       }
     });
 
@@ -220,7 +224,8 @@ export default {
           type: type.value,
         };
         if (areValidInputs()) {
-          if (!recordToEdit.value.id) {
+          if (!hasEdited.value || !recordToEdit.value.id) {
+            console.log("por add");
             addMovement(movementInfo)
               .then(() => {
                 $q.notify({
@@ -233,6 +238,7 @@ export default {
               })
               .catch(() => console.log("Error"));
           } else {
+            console.log("por edit");
             editMovement(recordToEdit.value.id, movementInfo)
               .then(() => {
                 $q.notify({
@@ -240,6 +246,8 @@ export default {
                   color: "positive",
                   message: "Record updated",
                 });
+                context.emit("onRecordAdded");
+                hasEdited.value = false;
                 initValues();
               })
               .catch(() => console.log("Error"));
