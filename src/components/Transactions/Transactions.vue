@@ -93,7 +93,7 @@ export default {
         rowsPerPage: 0,
       }),
       onRowClick(evt, row) {
-        console.log("clicked on", row);
+        // console.log("clicked on", row);
       },
       btnclick() {
         console.log("Button Click");

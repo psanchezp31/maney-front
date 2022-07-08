@@ -17,7 +17,7 @@ import Transactions from "src/components/Transactions/Transactions.vue";
 import Totals from "../components/Totals/Totals.vue";
 import Records from "src/components/Records/Records.vue";
 import useMoneyMovements from "../composables/useMoneyMovements";
-import { ref, computed, watchEffect } from "vue";
+import { ref } from "vue";
 
 export default {
   components: {
@@ -39,13 +39,11 @@ export default {
       transactionRows,
       onRecordAdded() {
         transactionRows.value = getMovements();
-        console.log('transactionRows onRecordAdded :>> ', transactionRows.value);
       },
       scrollToBottom(row) {
         if (row !== null) {
           rowToEdit.value = row;
         }
-        console.log(rowToEdit.value);
         window.scrollTo(0, 855);
       },
     };

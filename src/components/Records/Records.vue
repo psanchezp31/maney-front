@@ -102,10 +102,11 @@
 </template>
 
 <script>
-import { ref, watchEffect, computed } from "vue";
+import { ref, watchEffect, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import useMoneyMovements from "../../composables/useMoneyMovements";
 import useDate from "../../composables/useDate";
+import shallowEqual from "../../util/utilFunctions";
 
 export default {
   name: "Records",
@@ -132,13 +133,19 @@ export default {
     );
     const isEditing = ref(false);
     const hasEdited = ref(true);
+
+    watch(recordToEdit, (newValue, oldValue) => {
+      if (newValue.id !== oldValue.id) {
+        hasEdited.value = true;
+      } else {
+        if (!shallowEqual(newValue, oldValue)) {
+          hasEdited.value = true;
+        }
+      }
+    });
+    
     watchEffect(() => {
-      console.log('recordToEdit.value :>> ', recordToEdit.value);
-      console.log('hasEdited.value :>> ', hasEdited.value);
       if (recordToEdit.value && hasEdited.value) {
-        console.log(
-          "inside watcheffect: " + JSON.stringify(recordToEdit.value)
-        );
         category.value = recordToEdit.value.category;
         amount.value = recordToEdit.value.amount;
         description.value = recordToEdit.value.description;
@@ -225,7 +232,6 @@ export default {
         };
         if (areValidInputs()) {
           if (!hasEdited.value || !recordToEdit.value.id) {
-            console.log("por add");
             addMovement(movementInfo)
               .then(() => {
                 $q.notify({
@@ -238,7 +244,6 @@ export default {
               })
               .catch(() => console.log("Error"));
           } else {
-            console.log("por edit");
             editMovement(recordToEdit.value.id, movementInfo)
               .then(() => {
                 $q.notify({
