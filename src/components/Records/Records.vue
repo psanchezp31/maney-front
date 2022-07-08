@@ -25,12 +25,24 @@
             class="flex justify-center items-center form-wrapper flex flex-col"
           >
             <div class="flex justify-center items-center inputs-wrapper gap-7">
-              <q-input
+              <!-- <q-input
                 ref="categoryRef"
                 v-model="category"
                 label="Enter category"
                 lazy-rules
                 :rules="categoryRules"
+              /> -->
+              <q-select
+                dense
+                ref="categoryRef"
+                v-model="category"
+                label="Enter category"
+                use-input
+                input-debounce="0"
+                @new-value="createValue"
+                :options="filterOptions"
+                @filter="filterFn"
+                style="width: 220px"
               />
               <q-input
                 ref="amountRef"
@@ -39,10 +51,16 @@
                 type="number"
                 :rules="amountRules"
                 prefix="COP $"
+                style="width: 220px"
               />
             </div>
             <div class="flex justify-center items-center inputs-wrapper gap-7">
-              <q-input v-model="proxyDate" label="Date" ref="dateRef">
+              <q-input
+                v-model="proxyDate"
+                label="Date"
+                ref="dateRef"
+                style="width: 220px"
+              >
                 <q-popup-proxy
                   @before-show="updateProxy"
                   cover
@@ -68,7 +86,11 @@
                   </q-date>
                 </q-popup-proxy>
               </q-input>
-              <q-input v-model="description" label="Description" />
+              <q-input
+                v-model="description"
+                label="Description"
+                style="width: 220px"
+              />
             </div>
             <div class="q-gutter-sm radio-selector-type">
               <q-radio
@@ -108,6 +130,8 @@ import useMoneyMovements from "../../composables/useMoneyMovements";
 import useDate from "../../composables/useDate";
 import shallowEqual from "../../util/utilFunctions";
 
+const stringOptions = ["Google", "Facebook", "Twitter", "Apple", "Oracle"];
+
 export default {
   name: "Records",
   props: {
@@ -134,6 +158,8 @@ export default {
     const isEditing = ref(false);
     const hasEdited = ref(true);
 
+    const filterOptions = ref(stringOptions);
+
     watch(recordToEdit, (newValue, oldValue) => {
       if (newValue.id !== oldValue.id) {
         hasEdited.value = true;
@@ -143,7 +169,7 @@ export default {
         }
       }
     });
-    
+
     watchEffect(() => {
       if (recordToEdit.value && hasEdited.value) {
         category.value = recordToEdit.value.category;
@@ -198,6 +224,7 @@ export default {
       initValues,
       recordToEdit,
       isEditing,
+      filterOptions,
       amountRules: [
         (val) => (val && val.length > 0) || "Please type a valid amount",
       ],
@@ -264,6 +291,41 @@ export default {
       },
       saveDate() {
         date.value = proxyDate.value;
+      },
+      createValue(val, done) {
+        // Calling done(var) when new-value-mode is not set or "add", or done(var, "add") adds "var" content to the model
+        // and it resets the input textbox to empty string
+        // ----
+        // Calling done(var) when new-value-mode is "add-unique", or done(var, "add-unique") adds "var" content to the model
+        // only if is not already set
+        // and it resets the input textbox to empty string
+        // ----
+        // Calling done(var) when new-value-mode is "toggle", or done(var, "toggle") toggles the model with "var" content
+        // (adds to model if not already in the model, removes from model if already has it)
+        // and it resets the input textbox to empty string
+        // ----
+        // If "var" content is undefined/null, then it doesn't tampers with the model
+        // and only resets the input textbox to empty string
+
+        if (val.length > 0) {
+          if (!stringOptions.includes(val)) {
+            stringOptions.push(val);
+          }
+          done(val, "toggle");
+        }
+      },
+
+      filterFn(val, update) {
+        update(() => {
+          if (val === "") {
+            filterOptions.value = stringOptions;
+          } else {
+            const needle = val.toLowerCase();
+            filterOptions.value = stringOptions.filter(
+              (v) => v.toLowerCase().indexOf(needle) > -1
+            );
+          }
+        });
       },
     };
   },
